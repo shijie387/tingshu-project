@@ -4,6 +4,28 @@
 
 <mapper namespace="com.atguigu.tingshu.album.mapper.BaseAttributeMapper">
 
+    <!--自定义结果集：封装标签下所有标签值-->
+    <resultMap id="baseAttributeMap" type="com.atguigu.tingshu.model.album.BaseAttribute" autoMapping="true">
+        <!--封装一方-->
+        <id column="id" property="id"></id>
+        <!--封装多方-->
+        <collection property="attributeValueList" ofType="com.atguigu.tingshu.model.album.BaseAttributeValue" autoMapping="true">
+            <id column="base_attribute_value_id" property="id"></id>
+        </collection>
+    </resultMap>
 
+    <!--根据一级分类Id获取分类标签以及标签值-->
+    <select id="getAttributeByCategory1Id" resultMap="baseAttributeMap">
+        select ba.id,
+               ba.attribute_name,
+               bav.id base_attribute_value_id,
+               bav.attribute_id,
+               bav.value_name
+        from base_attribute ba
+                 inner join base_attribute_value bav
+                            on bav.attribute_id = ba.id
+        where ba.category1_id = #{category1Id}
+          and bav.is_deleted = 0
+    </select>
 </mapper>
 
