@@ -5,5 +5,23 @@
 <mapper namespace="com.atguigu.tingshu.album.mapper.BaseAttributeMapper">
 
 
+    <resultMap id="AttributeValueMap" type="com.atguigu.tingshu.model.album.BaseAttribute" autoMapping="true">
+        <id column="id" property="id"/>
+        <collection property="attributeValueList" ofType="com.atguigu.tingshu.model.album.BaseAttributeValue" autoMapping="true">
+            <id column="base_attribute_value_id" property="id"/>
+        </collection>
+    </resultMap>
+    <select id="getAttributesByCategory1Id" resultMap= "AttributeValueMap">
+        select ba.id,
+               ba.attribute_name,
+               bav.id base_attribute_value_id,
+               bav.value_name,
+               bav.attribute_id
+        from base_attribute ba
+                 inner join base_attribute_value bav
+                            on bav.attribute_id = ba.id
+        where ba.category1_id = #{category1Id}
+          and ba.is_deleted = 0
+    </select>
 </mapper>
 
