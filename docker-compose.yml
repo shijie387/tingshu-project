@@ -1,0 +1,92 @@
+
+
+services:
+  spzx-mysql: 
+    image: mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+    container_name: spzx-mysql
+    networks:
+      - spzx-network
+
+  spzx-redis:
+    image: redis
+    restart: always
+    ports:
+      - "6379:6379"
+    container_name: spzx-redis
+    networks:
+      - spzx-network
+
+  spzx-nacos:
+    image: nacos
+    restart: always
+    ports:
+      - "8848:8848"
+      - "9848:9848"
+      - "9849:9849"
+    environment:
+      - MODE=standalone
+      - JVM_XMS=256m
+      - JVM_XMX=256m
+      - JVM_XMN=256m
+    container_name: spzx-nacos
+    networks:
+      - spzx-network
+
+  spzx-sentinel-dashboard:
+    image: sentinel-dashboard-1.8.7
+    restart: always
+    ports:
+      - "8858:8858"
+    container_name: spzx-sentinel-dashboard
+    networks:
+      - spzx-network
+    platform: linux/arm64
+
+  spzx-minio:
+    image: minio
+    restart: always
+    ports:
+      - "9010:9000"
+      - "9011:9001"
+    environment:
+      MINIO_ROOT_USER: admin
+      MINIO_ROOT_PASSWORD: admin123456
+    volumes:
+      - minio-data:/data
+      - minio-config:/root/.minio
+    command: server /data --console-address ":9001"
+    container_name: spzx-minio
+    networks:
+      - spzx-network
+
+  spzx-rabbitmq:
+    image: rabbitmq
+    restart: always
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes:
+      - rabbitmq-plugin:/plugins
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    container_name: spzx-rabbitmq
+    networks:
+      - spzx-network
+
+volumes:
+  mysql-data: {}
+  minio-data: {}
+  minio-config: {}
+  rabbitmq-plugin: {}
+
+networks:
+  spzx-network:
+    driver: bridge
