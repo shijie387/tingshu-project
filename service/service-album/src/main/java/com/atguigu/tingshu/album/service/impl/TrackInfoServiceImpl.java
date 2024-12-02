@@ -11,9 +11,12 @@ import com.atguigu.tingshu.model.album.AlbumInfo;
 import com.atguigu.tingshu.model.album.TrackInfo;
 import com.atguigu.tingshu.model.album.TrackStat;
 import com.atguigu.tingshu.query.album.TrackInfoQuery;
+import com.atguigu.tingshu.user.client.UserFeignClient;
+import com.atguigu.tingshu.vo.album.AlbumTrackListVo;
 import com.atguigu.tingshu.vo.album.TrackInfoVo;
 import com.atguigu.tingshu.vo.album.TrackListVo;
 import com.atguigu.tingshu.vo.album.TrackMediaInfoVo;
+import com.atguigu.tingshu.vo.user.UserInfoVo;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Assert;
@@ -26,6 +29,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -40,6 +45,8 @@ public class TrackInfoServiceImpl extends ServiceImpl<TrackInfoMapper, TrackInfo
 	private VodService vodService;
 	@Autowired
 	private TrackStatMapper trackStatMapper;
+	@Autowired
+	private UserFeignClient userFeignClient;
 
 
 
@@ -184,6 +191,17 @@ public class TrackInfoServiceImpl extends ServiceImpl<TrackInfoMapper, TrackInfo
 
 		//6.删除点播平台音频文件
 		vodService.deleteMedia(deleteTrackInfo.getMediaFileId());
+	}
+
+	@Override
+	public Page<AlbumTrackListVo> getAlbumTrackPage(Page<AlbumTrackListVo> pageInfo, Long albumId, Long userId) {
+		//1.分页查询专辑下声音列表 TODO 暂不考虑声音付费标识 默认Vo对象AlbumTrackListVo付费标识：false
+		pageInfo = trackInfoMapper.getAlbumTrackPage(pageInfo, albumId);
+
+
+
+
+		return pageInfo;
 	}
 
 

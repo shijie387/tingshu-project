@@ -22,7 +22,7 @@ public class ReviewResultTask {
     @Autowired
     private VodService vodService;
 
-    @Scheduled(cron = "0/5 * * * * ?")
+    //@Scheduled(cron = "0/5 * * * * ?")
     public void getAudioReviewTaskResult() {
 //        log.info("[定时任务]查询审核中任务ID获取审核结果，根据审核结果更新审核状态");
         //1.根据审核状态（审核中）声音列表

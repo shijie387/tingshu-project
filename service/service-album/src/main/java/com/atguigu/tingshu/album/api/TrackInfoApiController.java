@@ -2,10 +2,12 @@ package com.atguigu.tingshu.album.api;
 
 import com.atguigu.tingshu.album.service.TrackInfoService;
 import com.atguigu.tingshu.album.service.VodService;
+import com.atguigu.tingshu.common.login.GGLogin;
 import com.atguigu.tingshu.common.result.Result;
 import com.atguigu.tingshu.common.util.AuthContextHolder;
 import com.atguigu.tingshu.model.album.TrackInfo;
 import com.atguigu.tingshu.query.album.TrackInfoQuery;
+import com.atguigu.tingshu.vo.album.AlbumTrackListVo;
 import com.atguigu.tingshu.vo.album.TrackInfoVo;
 import com.atguigu.tingshu.vo.album.TrackListVo;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -118,6 +120,31 @@ public class TrackInfoApiController {
 	public Result removeTrackInfo(@PathVariable Long id){
 		trackInfoService.removeTrackInfo(id);
 		return Result.ok();
+	}
+
+	/**
+	 * TODO 该方法不登录可以访问，但用户登录状态就可以从ThreadLocal获取用户ID
+	 * 分页查询当前用户可见声音列表-动态判断声音付费标识
+	 * @param albumId 专辑ID
+	 * @param page 页码
+	 * @param limit 页大小
+	 * @return
+	 */
+	@GGLogin(required = false)
+	@Operation(summary = "分页查询当前用户可见声音列表-动态判断声音付费标识")
+	@GetMapping("/trackInfo/findAlbumTrackPage/{albumId}/{page}/{limit}")
+	public Result<Page<AlbumTrackListVo>> getAlbumTrackPage(
+			@PathVariable Long albumId,
+			@PathVariable int page,
+			@PathVariable int limit
+	){
+		//1.获取当前登录用户信息
+		Long userId = AuthContextHolder.getUserId();
+		//2.构建分页所需Page对象
+		Page<AlbumTrackListVo> pageInfo = new Page<>(page, limit);
+		//3.调用业务层获取业务数据
+		pageInfo = trackInfoService.getAlbumTrackPage(pageInfo, albumId, userId);
+		return Result.ok(pageInfo);
 	}
 
 }
